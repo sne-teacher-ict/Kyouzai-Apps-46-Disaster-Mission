@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#eaf5ff" />
+  <title>町を守れ！防災ミッション</title>
+  <style>
+    :root {
+      --bg1: #eaf5ff;
+      --bg2: #f7fbff;
+      --panel: rgba(255, 255, 255, 0.96);
+      --text: #18324a;
+      --muted: #60778a;
+      --line: #c9dceb;
+      --blue: #1769aa;
+      --blue-dark: #0f4f83;
+      --blue-soft: #e8f4ff;
+      --green: #17825b;
+      --green-soft: #e7f8f0;
+      --orange: #d46b13;
+      --orange-soft: #fff2e4;
+      --red: #b9362d;
+      --red-soft: #fff0ef;
+      --yellow: #f2c94c;
+      --shadow: 0 12px 32px rgba(31, 73, 110, 0.13);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html { font-size: 16px; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(255,255,255,.92) 0 9%, transparent 10%),
+        linear-gradient(160deg, var(--bg1), var(--bg2) 52%, #eef9f3);
+      font-family: "Yu Gothic UI", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      line-height: 1.65;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button, select { font: inherit; }
+    button { touch-action: manipulation; }
+    ruby rt { font-size: .55em; color: #557187; font-weight: 500; }
+    body.hide-ruby rt { visibility: hidden; }
+    .hidden { display: none !important; }
+
+    .app {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 16px clamp(12px, 2.6vw, 28px) 40px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.65rem, 4vw, 2.65rem);
+      line-height: 1.25;
+      letter-spacing: .02em;
+    }
+    .brand p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: clamp(.95rem, 2vw, 1.08rem);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+      color: var(--text);
+      min-height: 44px;
+      padding: 10px 14px;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(31, 73, 110, 0.06);
+      font-weight: 700;
+    }
+    .btn:hover { border-color: var(--blue); }
+    .btn:focus-visible, .mission-card:focus-visible, .facility:focus-visible, .answer-card:focus-visible {
+      outline: 4px solid rgba(23, 105, 170, .22);
+      outline-offset: 2px;
+    }
+    .btn.primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+    .btn.soft {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      border-color: #a9ceeb;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    /* Start screen */
+    .start-panel { padding: clamp(18px, 3vw, 30px); }
+    .intro-strip {
+      display: grid;
+      grid-template-columns: 128px 1fr;
+      gap: 18px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #eef7ff, #f3fff8);
+      border: 1px solid #cfe2f1;
+    }
+    .captain {
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      border: 4px solid #a9d5f4;
+      box-shadow: 0 8px 22px rgba(23,105,170,.12);
+    }
+    .intro-strip h2 { margin: 0 0 6px; font-size: clamp(1.25rem, 2.8vw, 1.75rem); }
+    .intro-strip p { margin: 0; color: var(--muted); }
+
+    .section-title {
+      margin: 26px 0 12px;
+      font-size: 1.22rem;
+    }
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 14px;
+    }
+    .mission-card {
+      position: relative;
+      text-align: left;
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fff;
+      cursor: pointer;
+      min-height: 225px;
+      overflow: hidden;
+      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+    }
+    .mission-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(23,105,170,.12);
+      border-color: #88bce2;
+    }
+    .mission-card.selected {
+      background: #f2f8ff;
+      border-color: var(--blue);
+    }
+    .mission-visual {
+      height: 92px;
+      border-radius: 15px;
+      margin-bottom: 12px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .mission-card[data-mission="flood"] .mission-visual { background: linear-gradient(160deg, #dff3ff, #c4e8ff); }
+    .mission-card[data-mission="quake"] .mission-visual { background: linear-gradient(160deg, #fff1d9, #ffe1b3); }
+    .mission-card[data-mission="fire"] .mission-visual { background: linear-gradient(160deg, #fff0e7, #ffd7c1); }
+    .mission-card h3 { margin: 0 0 5px; font-size: 1.18rem; }
+    .mission-card p { margin: 0; color: var(--muted); font-size: .94rem; }
+    .completion-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .start-controls {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 14px;
+    }
+    .field { display: grid; gap: 5px; }
+    .field label { color: var(--muted); font-size: .9rem; font-weight: 800; }
+    .field select {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 8px 34px 8px 12px;
+      background: #fff;
+    }
+    .start-note {
+      margin-top: 14px;
+      padding: 11px 13px;
+      border-radius: 13px;
+      background: #fff9e8;
+      border: 1px solid #efd891;
+      color: #6d5511;
+      font-size: .92rem;
+    }
+
+    /* Game screen */
+    .game-panel { overflow: hidden; }
+    .game-hud {
+      padding: 14px clamp(14px, 3vw, 24px);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(250,253,255,.98);
+    }
+    .mission-name { font-weight: 900; white-space: nowrap; }
+    .safety-wrap { min-width: 0; }
+    .safety-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: .85rem;
+      font-weight: 800;
+    }
+    .safety-track {
+      height: 15px;
+      border-radius: 999px;
+      background: #dce8ef;
+      overflow: hidden;
+    }
+    .safety-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #3cbf86, #1a8c62);
+      transition: width .4s ease;
+    }
+    .stage-count { font-weight: 900; white-space: nowrap; }
+
+    .game-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr);
+      min-height: 680px;
+    }
+
+    .town-side {
+      position: relative;
+      padding: 18px;
+      background: linear-gradient(#dff3ff 0 23%, #e7f5df 23% 100%);
+      border-right: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .clouds::before, .clouds::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      width: 90px;
+      height: 28px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.7);
+      box-shadow: 25px -10px 0 rgba(255,255,255,.7), 48px 4px 0 rgba(255,255,255,.7);
+    }
+    .clouds::before { left: 42px; }
+    .clouds::after { right: 70px; transform: scale(.8); }
+
+    .town-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 44px;
+      padding: 12px;
+      border-radius: 22px;
+      background:
+        linear-gradient(90deg, transparent 31.5%, #d8d3c8 31.5% 35%, transparent 35% 65%, #d8d3c8 65% 68.5%, transparent 68.5%),
+        linear-gradient(transparent 46%, #d8d3c8 46% 51%, transparent 51%);
+    }
+    .facility {
+      position: relative;
+      min-height: 142px;
+      border: 2px solid rgba(104,143,171,.45);
+      border-radius: 18px;
+      background: rgba(255,255,255,.95);
+      padding: 8px 8px 10px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 4px;
+      font-weight: 900;
+      color: var(--text);
+      box-shadow: 0 6px 14px rgba(53,87,110,.1);
+      transition: transform .14s ease, border-color .14s ease, opacity .14s ease, box-shadow .14s ease;
+    }
+    .facility:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--blue); }
+    .facility:disabled { cursor: default; }
+    .facility.not-candidate {
+      opacity: .38;
+      filter: grayscale(.7);
+    }
+    .facility.correct-flash {
+      border-color: var(--green);
+      background: var(--green-soft);
+      box-shadow: 0 0 0 6px rgba(23,130,91,.12), 0 12px 24px rgba(23,130,91,.16);
+      animation: facilityPop .5s ease;
+    }
+    .facility.wrong-flash {
+      border-color: var(--red);
+      background: var(--red-soft);
+      animation: shake .35s ease;
+    }
+    .facility-icon {
+      width: 82px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+    }
+    .facility-label { font-size: .98rem; line-height: 1.35; }
+
+    .river {
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      bottom: 6px;
+      height: 52px;
+      background: repeating-linear-gradient(165deg, #7ec9ee 0 18px, #9cddfa 18px 36px);
+      border-top: 5px solid rgba(255,255,255,.55);
+      transform: rotate(-1deg);
+      z-index: 1;
+    }
+
+    .event-side {
+      padding: clamp(18px, 3vw, 28px);
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    .event-tag {
+      align-self: flex-start;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--orange-soft);
+      color: #8a440c;
+      font-weight: 900;
+      font-size: .86rem;
+      margin-bottom: 12px;
+    }
+    .event-visual {
+      min-height: 150px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #f2f8ff, #f7fff8);
+      border: 1px solid #d4e4ef;
+      display: grid;
+      place-items: center;
+      margin-bottom: 15px;
+      overflow: hidden;
+    }
+    .event-side h2 {
+      margin: 0;
+      font-size: clamp(1.35rem, 2.7vw, 1.9rem);
+      line-height: 1.5;
+    }
+    .event-side .instruction {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .answer-grid {
+      display: grid;
+      gap: 11px;
+      margin-top: 18px;
+    }
+    .answer-card {
+      min-height: 70px;
+      border: 2px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      padding: 13px 14px;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      font-weight: 800;
+      line-height: 1.5;
+    }
+    .answer-card:hover { border-color: var(--blue); background: #f7fbff; }
+    .answer-card.correct {
+      border-color: var(--green);
+      background: var(--green-soft);
+    }
+    .answer-card.wrong {
+      border-color: var(--red);
+      background: var(--red-soft);
+    }
+    .answer-mark {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #edf3f7;
+      display: grid;
+      place-items: center;
+    }
+
+    .feedback {
+      margin-top: 17px;
+      padding: 14px 15px;
+      border-radius: 15px;
+      border: 1px solid var(--line);
+      background: #f8fbfd;
+    }
+    .feedback.ok { border-color: #96d9bd; background: var(--green-soft); }
+    .feedback.ng { border-color: #efb0ab; background: var(--red-soft); }
+    .feedback strong { display: block; font-size: 1.06rem; }
+    .feedback p { margin: 4px 0 0; }
+
+    .event-actions {
+      margin-top: auto;
+      padding-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+    }
+    .event-actions-left, .event-actions-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    /* Result */
+    .result-panel {
+      padding: clamp(22px, 4vw, 40px);
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .result-panel h2 { margin: 0; font-size: clamp(1.7rem, 4vw, 2.5rem); }
+    .stars {
+      font-size: clamp(2.8rem, 8vw, 5.4rem);
+      letter-spacing: .08em;
+      line-height: 1.2;
+      margin: 14px 0 4px;
+      color: #e7b528;
+      text-shadow: 0 4px 0 rgba(126,90,0,.15);
+    }
+    .result-message { font-weight: 900; font-size: 1.2rem; }
+    .result-detail { color: var(--muted); margin-top: 7px; }
+    .result-badge {
+      width: min(520px, 100%);
+      margin: 22px auto 0;
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #eef8ff, #effdf5);
+      border: 2px solid #b9d9ea;
+    }
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 50;
+    }
+    .confetti-piece {
+      position: absolute;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      border-radius: 2px;
+      animation: fall 2.8s linear forwards;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @keyframes facilityPop {
+      0% { transform: scale(.92); }
+      60% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-7px); }
+      75% { transform: translateX(7px); }
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(720deg); opacity: .85; }
+    }
+
+
+    dialog {
+      width: min(720px, calc(100% - 24px));
+      border: 0;
+      border-radius: 20px;
+      padding: 0;
+      color: var(--text);
+      box-shadow: 0 30px 90px rgba(18, 52, 78, .28);
+    }
+    dialog::backdrop { background: rgba(20, 43, 61, .48); }
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fbff;
+    }
+    .dialog-head h2 { margin: 0; font-size: 1.25rem; }
+    .dialog-body { padding: 18px; }
+    .worksheet-settings { display: grid; gap: 15px; }
+    .setting-box {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+    .setting-box h3 { margin: 0 0 10px; font-size: 1rem; }
+    .setting-list { display: grid; gap: 9px; }
+    .setting-list label {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      cursor: pointer;
+    }
+    .setting-list input { margin-top: .35em; }
+    .worksheet-note {
+      color: var(--muted);
+      font-size: .92rem;
+      margin: 8px 0 0;
+    }
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .print-sheet { display: none; }
+
+    @media print {
+      @page { size: A4 portrait; margin: 10mm; }
+      body { background: #fff; color: #000; }
+      .app, dialog, .confetti { display: none !important; }
+      .print-sheet {
+        display: block !important;
+        font-family: "Yu Gothic", "Meiryo", sans-serif;
+        line-height: 1.45;
+      }
+      .worksheet-page {
+        height: 275mm;
+        overflow: hidden;
+        break-after: page;
+        page-break-after: always;
+      }
+      .worksheet-page:last-child {
+        break-after: auto;
+        page-break-after: auto;
+      }
+      .worksheet-page-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8mm;
+        border-bottom: 2px solid #333;
+        padding-bottom: 3mm;
+        margin-bottom: 4mm;
+      }
+      .worksheet-page h1 {
+        font-size: 18pt;
+        line-height: 1.25;
+        margin: 0;
+      }
+      .worksheet-page-count { font-size: 9pt; white-space: nowrap; }
+      .worksheet-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 10mm;
+        font-size: 10.5pt;
+        margin-bottom: 5mm;
+      }
+      .worksheet-name {
+        display: inline-block;
+        min-width: 62mm;
+        border-bottom: 1px solid #000;
+      }
+      .worksheet-question {
+        border: 1px solid #888;
+        border-radius: 3mm;
+        padding: 3.2mm;
+        margin-bottom: 4mm;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .worksheet-q-grid {
+        display: grid;
+        grid-template-columns: 34mm 1fr;
+        gap: 4mm;
+        align-items: start;
+      }
+      .worksheet-q-grid.no-image { grid-template-columns: 1fr; }
+      .worksheet-visual {
+        width: 32mm;
+        height: 23mm;
+        border: 1px solid #aaa;
+        border-radius: 2mm;
+        overflow: hidden;
+      }
+      .worksheet-visual svg { width: 100%; height: 100%; display: block; }
+      .worksheet-question-number { font-weight: 800; font-size: 10pt; }
+      .worksheet-question-text { font-size: 11.5pt; font-weight: 700; margin: 1mm 0 2.5mm; }
+      .worksheet-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.8mm 6mm;
+        font-size: 10.5pt;
+      }
+      .worksheet-option { display: block; }
+      .worksheet-answer-line {
+        margin-top: 3mm;
+        min-height: 7mm;
+        border-bottom: 1px solid #555;
+      }
+      .worksheet-reason-line {
+        margin-top: 2mm;
+        min-height: 12mm;
+        border-bottom: 1px solid #777;
+        background: repeating-linear-gradient(to bottom, transparent 0 5.5mm, #aaa 5.6mm 5.8mm);
+      }
+      .worksheet-teacher-answer {
+        margin-top: 2mm;
+        font-size: 8.5pt;
+        color: #555;
+      }
+      .worksheet-footer-note {
+        font-size: 8.5pt;
+        color: #555;
+        margin-top: 2mm;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .mission-grid { grid-template-columns: 1fr; }
+      .mission-card { min-height: auto; display: grid; grid-template-columns: 110px 1fr; gap: 13px; align-items: center; }
+      .mission-visual { margin: 0; height: 96px; }
+      .completion-badge { top: 8px; right: 8px; }
+      .game-body { grid-template-columns: 1fr; }
+      .town-side { border-right: 0; border-bottom: 1px solid var(--line); min-height: 500px; }
+      .event-side { min-height: 540px; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar { display: grid; }
+      .toolbar { justify-content: flex-start; }
+      .intro-strip { grid-template-columns: 1fr; text-align: center; }
+      .captain { justify-self: center; }
+      .mission-card { grid-template-columns: 90px 1fr; }
+      .game-hud { grid-template-columns: 1fr auto; }
+      .safety-wrap { grid-column: 1 / -1; grid-row: 2; }
+      .town-grid { grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: 35px; background: transparent; }
+      .facility { min-height: 125px; }
+      .facility-icon { width: 70px; height: 62px; }
+      .town-side { min-height: 610px; }
+      .event-actions { align-items: stretch; }
+      .event-actions-left, .event-actions-right { width: 100%; }
+      .event-actions .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1><ruby>町<rt>まち</rt></ruby>を<ruby>守<rt>まも</rt></ruby>れ！<ruby>防災<rt>ぼうさい</rt></ruby>ミッション</h1>
+        <p><ruby>町<rt>まち</rt></ruby>で<ruby>起<rt>お</rt></ruby>きたことに<ruby>対応<rt>たいおう</rt></ruby>し、みんなを<ruby>安全<rt>あんぜん</rt></ruby>にしよう。</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="rubyBtn" type="button">ふりがな：あり</button>
+        <button class="btn" id="soundBtn" type="button">音：あり</button>
+        <button class="btn" id="worksheetBtn" type="button">ワークシート</button>
+        <button class="btn hidden" id="homeTopBtn" type="button">ミッションをえらぶ</button>
+      </div>
+    </header>
+
+    <section id="startScreen" class="panel start-panel">
+      <div class="intro-strip">
+        <div class="captain" aria-hidden="true">
+          <svg viewBox="0 0 120 120" width="104" height="104">
+            <circle cx="60" cy="60" r="52" fill="#eaf5ff"/>
+            <path d="M31 52c2-22 16-35 29-35s27 13 29 35" fill="#1769aa"/>
+            <path d="M27 48h66l-8 17H35z" fill="#2c83c4"/>
+            <circle cx="60" cy="65" r="28" fill="#ffd7b0" stroke="#7f5235" stroke-width="2"/>
+            <circle cx="50" cy="61" r="3" fill="#18324a"/>
+            <circle cx="70" cy="61" r="3" fill="#18324a"/>
+            <path d="M50 75q10 8 20 0" fill="none" stroke="#8b4631" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="60" cy="39" r="8" fill="#fff"/>
+            <path d="M60 34v10M55 39h10" stroke="#b9362d" stroke-width="3"/>
+            <path d="M32 101q28-22 56 0" fill="#1769aa"/>
+          </svg>
+        </div>
+        <div>
+          <h2><ruby>防災隊員<rt>ぼうさいたいいん</rt></ruby>として、<ruby>町<rt>まち</rt></ruby>のピンチを<ruby>解決<rt>かいけつ</rt></ruby>しよう！</h2>
+          <p>できごとを読み、<ruby>施設<rt>しせつ</rt></ruby>や<ruby>行動<rt>こうどう</rt></ruby>を<ruby>選<rt>えら</rt></ruby>びます。まちがえても、ヒントを見てやり直せます。</p>
+        </div>
+      </div>
+
+      <h2 class="section-title">1　ミッションをえらぶ</h2>
+      <div class="mission-grid" role="radiogroup" aria-label="ミッション選択">
+        <button class="mission-card selected" type="button" data-mission="flood" role="radio" aria-checked="true">
+          <span class="completion-badge" data-complete="flood">未クリア</span>
+          <div class="mission-visual" aria-hidden="true">
+            <svg viewBox="0 0 190 92" width="190" height="92">
+              <rect width="190" height="92" rx="14" fill="#cdeeff"/>
+              <path d="M0 67q30-14 60 0t60 0t70 0v25H0z" fill="#4aaee0"/>
+              <path d="M0 75q30-14 60 0t60 0t70 0" fill="none" stroke="#a8e5ff" stroke-width="5"/>
+              <path d="M34 60V34l23-18 23 18v26" fill="#fff" stroke="#1769aa" stroke-width="3"/>
+              <path d="M123 15c17 0 17 17 0 17h-28c-13 0-13-15 0-15 4-11 22-12 28-2z" fill="#7f9cac"/>
+              <path d="M102 41l-5 13M119 40l-5 14M136 40l-5 14" stroke="#1769aa" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3><ruby>大雨<rt>おおあめ</rt></ruby>から<ruby>町<rt>まち</rt></ruby>を<ruby>守<rt>まも</rt></ruby>れ</h3>
+            <p>川の水が増え、道路も危険です。避難情報や避難所、救助について判断します。</p>
+          </div>
+        </button>
+
+        <button class="mission-card" type="button" data-mission="quake" role="radio" aria-checked="false">
+          <span class="completion-badge" data-complete="quake">未クリア</span>
+          <div class="mission-visual" aria-hidden="true">
+            <svg viewBox="0 0 190 92" width="190" height="92">
+              <rect width="190" height="92" rx="14" fill="#ffe8c3"/>
+              <path d="M26 72V29h48v43M98 72V20h58v52" fill="#fff" stroke="#8a5d24" stroke-width="3"/>
+              <path d="M55 29l-8 15 11 12-9 16M127 20l-9 17 12 14-10 21" fill="none" stroke="#b9362d" stroke-width="4"/>
+              <path d="M7 77h176" stroke="#9f8b73" stroke-width="6"/>
+              <path d="M70 81l10-9 9 8 10-7 12 8" fill="none" stroke="#6b5b4e" stroke-width="3"/>
+            </svg>
+          </div>
+          <div>
+            <h3><ruby>大地震<rt>おおじしん</rt></ruby>に<ruby>対応<rt>たいおう</rt></ruby>せよ</h3>
+            <p>建物の倒壊、けが人、交通の混乱が起きています。町の施設を連携させます。</p>
+          </div>
+        </button>
+
+        <button class="mission-card" type="button" data-mission="fire" role="radio" aria-checked="false">
+          <span class="completion-badge" data-complete="fire">未クリア</span>
+          <div class="mission-visual" aria-hidden="true">
+            <svg viewBox="0 0 190 92" width="190" height="92">
+              <rect width="190" height="92" rx="14" fill="#ffe2d2"/>
+              <path d="M36 72V34l28-20 28 20v38" fill="#fff" stroke="#a85326" stroke-width="3"/>
+              <path d="M99 76c-9-13 4-24 10-31 2 8 8 9 8 18 5-10 4-20 0-29 17 11 28 29 17 42z" fill="#ff8a3d" stroke="#b9362d" stroke-width="3"/>
+              <rect x="142" y="46" width="33" height="22" rx="5" fill="#e94136"/>
+              <circle cx="150" cy="71" r="6" fill="#4b5563"/><circle cx="169" cy="71" r="6" fill="#4b5563"/>
+            </svg>
+          </div>
+          <div>
+            <h3><ruby>火災<rt>かさい</rt></ruby>と<ruby>救助<rt>きゅうじょ</rt></ruby>に<ruby>対応<rt>たいおう</rt></ruby>せよ</h3>
+            <p>住宅地で火事が発生しました。通報、消火、交通整理、治療を進めます。</p>
+          </div>
+        </button>
+      </div>
+
+      <div class="start-controls">
+        <div class="field">
+          <label for="difficultySelect">むずかしさ</label>
+          <select id="difficultySelect">
+            <option value="easy">やさしい（選ぶ場所をしぼる）</option>
+            <option value="normal" selected>ふつう（町全体から選ぶ）</option>
+          </select>
+        </div>
+        <div id="selectedMissionStatus" style="font-weight:800; color:var(--blue-dark); padding:10px 4px;">選択中：大雨から町を守れ</div>
+        <button class="btn primary" id="startBtn" type="button">選んだミッションをはじめる</button>
+      </div>
+      <div class="start-note">
+        <strong><ruby>注意<rt>ちゅうい</rt></ruby>：</strong>
+        <ruby>避難所<rt>ひなんじょ</rt></ruby>になる<ruby>施設<rt>しせつ</rt></ruby>や、<ruby>実際<rt>じっさい</rt></ruby>の<ruby>役割<rt>やくわり</rt></ruby>は<ruby>地域<rt>ちいき</rt></ruby>によってちがいます。学校や市町村の<ruby>防災情報<rt>ぼうさいじょうほう</rt></ruby>も<ruby>確認<rt>かくにん</rt></ruby>しましょう。
+      </div>
+    </section>
+
+    <section id="gameScreen" class="panel game-panel hidden" aria-live="polite">
+      <div class="game-hud">
+        <div class="mission-name" id="missionName">大雨から町を守れ</div>
+        <div class="safety-wrap">
+          <div class="safety-label"><span>町の安全メーター</span><span id="safetyText">0%</span></div>
+          <div class="safety-track"><div class="safety-bar" id="safetyBar"></div></div>
+        </div>
+        <div class="stage-count" id="stageCount">1 / 6</div>
+      </div>
+
+      <div class="game-body">
+        <section class="town-side clouds" aria-label="町の地図">
+          <div class="town-grid" id="townGrid"></div>
+          <div class="river" aria-hidden="true"></div>
+        </section>
+
+        <section class="event-side">
+          <div class="event-tag" id="eventTag">できごと 1</div>
+          <div class="event-visual" id="eventVisual" aria-hidden="true"></div>
+          <h2 id="eventQuestion"></h2>
+          <p class="instruction" id="eventInstruction"></p>
+          <div class="answer-grid hidden" id="answerGrid"></div>
+          <div class="feedback hidden" id="feedback"></div>
+          <div class="event-actions">
+            <div class="event-actions-left">
+              <button class="btn" id="readBtn" type="button">🔊 よみあげ</button>
+              <button class="btn soft" id="hintBtn" type="button">ヒント</button>
+            </div>
+            <div class="event-actions-right">
+              <button class="btn primary hidden" id="nextBtn" type="button">つぎへ</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="panel result-panel hidden">
+      <h2>ミッション・コンプリート！</h2>
+      <div class="stars" id="resultStars">★★★</div>
+      <div class="result-message" id="resultMessage"></div>
+      <div class="result-detail" id="resultDetail"></div>
+      <div class="result-badge">
+        <strong id="badgeTitle">大雨対応ミッション 修了</strong>
+        <p id="badgeText" style="margin:6px 0 0; color:var(--muted);"></p>
+      </div>
+      <div class="result-actions">
+        <button class="btn primary" id="retryBtn" type="button">もういちど</button>
+        <button class="btn" id="selectMissionBtn" type="button">ほかのミッション</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="worksheetDialog">
+    <div class="dialog-head">
+      <h2>ワークシートを作る</h2>
+      <button class="btn" id="closeWorksheetBtn" type="button">とじる</button>
+    </div>
+    <div class="dialog-body">
+      <div class="worksheet-settings">
+        <section class="setting-box">
+          <h3>ミッション</h3>
+          <div class="field">
+            <select id="worksheetMissionSelect" aria-label="ワークシートのミッション">
+              <option value="flood">大雨から町を守れ</option>
+              <option value="quake">大地震に対応せよ</option>
+              <option value="fire">火災と救助に対応せよ</option>
+            </select>
+          </div>
+        </section>
+        <section class="setting-box">
+          <h3>ワークシートの種類</h3>
+          <div class="setting-list">
+            <label><input type="radio" name="worksheetType" value="standard" checked> <span><b>標準</b>　6つのできごとを3択で考える</span></label>
+            <label><input type="radio" name="worksheetType" value="easy"> <span><b>やさしい</b>　2択と場面イラストで考える</span></label>
+            <label><input type="radio" name="worksheetType" value="reflection"> <span><b>ふりかえり</b>　自分の判断と、その理由を書く</span></label>
+          </div>
+          <p class="worksheet-note">1ミッション6問を、3問ずつ2ページにまとめます。</p>
+        </section>
+        <section class="setting-box">
+          <h3>印刷の設定</h3>
+          <div class="setting-list">
+            <label><input type="checkbox" id="worksheetImageCheck"> <span>標準・ふりかえりにも場面イラストを入れる</span></label>
+            <label><input type="checkbox" id="worksheetAnswerCheck"> <span>先生用の答えを入れる</span></label>
+          </div>
+        </section>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" id="cancelWorksheetBtn" type="button">やめる</button>
+        <button class="btn primary" id="printWorksheetBtn" type="button">印刷する</button>
+      </div>
+    </div>
+  </dialog>
+
+  <section id="printSheet" class="print-sheet" aria-hidden="true"></section>
+
+  <div class="confetti hidden" id="confetti" aria-hidden="true"></div>
+
+  <script>
+    "use strict";
+
+    const facilities = [
+      { id: "cityhall", plain: "市役所", label: "<ruby>市役所<rt>しやくしょ</rt></ruby>", icon: "cityhall" },
+      { id: "firedept", plain: "消防署", label: "<ruby>消防署<rt>しょうぼうしょ</rt></ruby>", icon: "firedept" },
+      { id: "police", plain: "警察署", label: "<ruby>警察署<rt>けいさつしょ</rt></ruby>", icon: "police" },
+      { id: "hospital", plain: "病院", label: "<ruby>病院<rt>びょういん</rt></ruby>", icon: "hospital" },
+      { id: "school", plain: "学校", label: "<ruby>学校<rt>がっこう</rt></ruby>", icon: "school" },
+      { id: "community", plain: "公民館", label: "<ruby>公民館<rt>こうみんかん</rt></ruby>", icon: "community" }
+    ];
+
+    const missions = {
+      flood: {
+        title: "大雨から町を守れ",
+        titleHtml: "<ruby>大雨<rt>おおあめ</rt></ruby>から<ruby>町<rt>まち</rt></ruby>を<ruby>守<rt>まも</rt></ruby>れ",
+        badge: "大雨対応ミッション 修了",
+        color: "#4aaee0",
+        stages: [
+          {
+            type: "action",
+            visual: "rain-info",
+            q: "雨が強くなり、川の水が増えています。まず、どうしますか？",
+            qHtml: "<ruby>雨<rt>あめ</rt></ruby>が<ruby>強<rt>つよ</rt></ruby>くなり、<ruby>川<rt>かわ</rt></ruby>の<ruby>水<rt>みず</rt></ruby>が<ruby>増<rt>ふ</rt></ruby>えています。まず、どうしますか？",
+            instruction: "安全な行動を1つ選びましょう。",
+            hint: "うわさではなく、公的な情報を確かめます。",
+            answer: "official-info",
+            choices: [
+              { id: "official-info", html: "<ruby>市<rt>し</rt></ruby>や<ruby>気象台<rt>きしょうだい</rt></ruby>の<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>確認<rt>かくにん</rt></ruby>する", text: "市や気象台の情報を確認する" },
+              { id: "go-river", html: "<ruby>川<rt>かわ</rt></ruby>の<ruby>近<rt>ちか</rt></ruby>くへ<ruby>見<rt>み</rt></ruby>に<ruby>行<rt>い</rt></ruby>く", text: "川の近くへ見に行く" },
+              { id: "rumor", html: "SNSのうわさだけを<ruby>信<rt>しん</rt></ruby>じる", text: "SNSのうわさだけを信じる" }
+            ],
+            ok: "正しい情報を確認できました。町の状況を判断できます。",
+            ng: "川の近くは危険です。まず公的な情報を確認しましょう。"
+          },
+          {
+            type: "facility",
+            visual: "warning",
+            q: "町のみんなに避難情報を伝え、避難所の開設をまとめる中心はどこですか？",
+            qHtml: "<ruby>町<rt>まち</rt></ruby>のみんなに<ruby>避難情報<rt>ひなんじょうほう</rt></ruby>を<ruby>伝<rt>つた</rt></ruby>え、<ruby>避難所<rt>ひなんじょ</rt></ruby>の<ruby>開設<rt>かいせつ</rt></ruby>をまとめる<ruby>中心<rt>ちゅうしん</rt></ruby>はどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "市全体の情報と支援をまとめる施設です。",
+            answer: "cityhall",
+            candidates: ["cityhall", "school", "police"],
+            ok: "市役所が避難情報を出し、町全体の対応をまとめました。",
+            ng: "町全体の情報をまとめる施設を考えてみましょう。"
+          },
+          {
+            type: "facility",
+            visual: "road-water",
+            q: "道路が水につかり、車が危険です。交通整理をするのはどこですか？",
+            qHtml: "<ruby>道路<rt>どうろ</rt></ruby>が<ruby>水<rt>みず</rt></ruby>につかり、<ruby>車<rt>くるま</rt></ruby>が<ruby>危険<rt>きけん</rt></ruby>です。<ruby>交通整理<rt>こうつうせいり</rt></ruby>をするのはどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "道路や町の安全を守ります。",
+            answer: "police",
+            candidates: ["police", "firedept", "cityhall"],
+            ok: "警察が危険な道路への立ち入りを止め、交通整理をしました。",
+            ng: "道路の安全や交通を守る施設を考えてみましょう。"
+          },
+          {
+            type: "facility",
+            visual: "shelter-open",
+            q: "この町では、教室や体育館のある施設を避難所として開きます。児童や生徒が学ぶ施設はどこですか？",
+            qHtml: "この<ruby>町<rt>まち</rt></ruby>では、<ruby>教室<rt>きょうしつ</rt></ruby>や<ruby>体育館<rt>たいいくかん</rt></ruby>のある<ruby>施設<rt>しせつ</rt></ruby>を<ruby>避難所<rt>ひなんじょ</rt></ruby>として<ruby>開<rt>ひら</rt></ruby>きます。<ruby>児童<rt>じどう</rt></ruby>や<ruby>生徒<rt>せいと</rt></ruby>が<ruby>学<rt>まな</rt></ruby>ぶ<ruby>施設<rt>しせつ</rt></ruby>はどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "問題文に、使う建物が書かれています。",
+            answer: "school",
+            candidates: ["school", "community", "hospital"],
+            ok: "学校の体育館が避難所として開かれました。",
+            ng: "どの建物の体育館を使うか、問題文を確認しましょう。"
+          },
+          {
+            type: "action",
+            visual: "shelter-supplies",
+            q: "避難所へ行くことになりました。持っていくものとして適切なのはどれですか？",
+            qHtml: "<ruby>避難所<rt>ひなんじょ</rt></ruby>へ<ruby>行<rt>い</rt></ruby>くことになりました。<ruby>持<rt>も</rt></ruby>っていくものとして<ruby>適切<rt>てきせつ</rt></ruby>なのはどれですか？",
+            instruction: "必要なものを1つ選びましょう。",
+            hint: "水、薬、連絡に必要なものなどを考えます。",
+            answer: "essential",
+            choices: [
+              { id: "essential", html: "<ruby>水<rt>みず</rt></ruby>・<ruby>薬<rt>くすり</rt></ruby>・<ruby>連絡先<rt>れんらくさき</rt></ruby>など<ruby>必要<rt>ひつよう</rt></ruby>なもの", text: "水・薬・連絡先など必要なもの" },
+              { id: "heavy", html: "<ruby>重<rt>おも</rt></ruby>い<ruby>荷物<rt>にもつ</rt></ruby>をできるだけたくさん", text: "重い荷物をできるだけたくさん" },
+              { id: "nothing", html: "<ruby>何<rt>なに</rt></ruby>も<ruby>確認<rt>かくにん</rt></ruby>せず、すぐに<ruby>外<rt>そと</rt></ruby>へ<ruby>出<rt>で</rt></ruby>る", text: "何も確認せず、すぐに外へ出る" }
+            ],
+            ok: "必要なものを持ち、安全を確認して避難できます。",
+            ng: "安全に動ける量と、命や連絡に必要なものを考えましょう。"
+          },
+          {
+            type: "facility",
+            visual: "injury",
+            q: "避難中に転んで大けがをした人がいます。治療をする施設はどこですか？",
+            qHtml: "<ruby>避難中<rt>ひなんちゅう</rt></ruby>に<ruby>転<rt>ころ</rt></ruby>んで<ruby>大<rt>おお</rt></ruby>けがをした<ruby>人<rt>ひと</rt></ruby>がいます。<ruby>治療<rt>ちりょう</rt></ruby>をする<ruby>施設<rt>しせつ</rt></ruby>はどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "医師や看護師がいる施設です。",
+            answer: "hospital",
+            candidates: ["hospital", "firedept", "school"],
+            ok: "病院がけが人を受け入れ、治療しました。",
+            ng: "けがの治療をする施設を考えてみましょう。"
+          }
+        ]
+      },
+
+      quake: {
+        title: "大地震に対応せよ",
+        titleHtml: "<ruby>大地震<rt>おおじしん</rt></ruby>に<ruby>対応<rt>たいおう</rt></ruby>せよ",
+        badge: "地震対応ミッション 修了",
+        color: "#d98d2b",
+        stages: [
+          {
+            type: "action",
+            visual: "quake-protect",
+            q: "学校にいるとき、大きな揺れが始まりました。まず何をしますか？",
+            qHtml: "<ruby>学校<rt>がっこう</rt></ruby>にいるとき、<ruby>大<rt>おお</rt></ruby>きな<ruby>揺<rt>ゆ</rt></ruby>れが<ruby>始<rt>はじ</rt></ruby>まりました。まず<ruby>何<rt>なに</rt></ruby>をしますか？",
+            instruction: "安全な行動を1つ選びましょう。",
+            hint: "揺れている間は、まず自分の体を守ります。",
+            answer: "protect",
+            choices: [
+              { id: "protect", html: "<ruby>頭<rt>あたま</rt></ruby>を<ruby>守<rt>まも</rt></ruby>り、<ruby>先生<rt>せんせい</rt></ruby>の<ruby>指示<rt>しじ</rt></ruby>を<ruby>聞<rt>き</rt></ruby>く", text: "頭を守り、先生の指示を聞く" },
+              { id: "run", html: "すぐに<ruby>外<rt>そと</rt></ruby>へ<ruby>走<rt>はし</rt></ruby>り<ruby>出<rt>だ</rt></ruby>す", text: "すぐに外へ走り出す" },
+              { id: "window", html: "<ruby>窓<rt>まど</rt></ruby>の<ruby>近<rt>ちか</rt></ruby>くで<ruby>外<rt>そと</rt></ruby>を<ruby>見<rt>み</rt></ruby>る", text: "窓の近くで外を見る" }
+            ],
+            ok: "頭を守り、揺れがおさまるまで安全を確保できました。",
+            ng: "揺れている間に走ると危険です。まず頭と体を守りましょう。"
+          },
+          {
+            type: "facility",
+            visual: "collapsed",
+            q: "建物がこわれ、中に人が取り残されています。救助活動をするのはどこですか？",
+            qHtml: "<ruby>建物<rt>たてもの</rt></ruby>がこわれ、<ruby>中<rt>なか</rt></ruby>に<ruby>人<rt>ひと</rt></ruby>が<ruby>取<rt>と</rt></ruby>り<ruby>残<rt>のこ</rt></ruby>されています。<ruby>救助活動<rt>きゅうじょかつどう</rt></ruby>をするのはどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "救助隊や消防車がある施設です。",
+            answer: "firedept",
+            candidates: ["firedept", "police", "hospital"],
+            ok: "消防署の救助隊が現場へ向かいました。",
+            ng: "災害現場で救助をする隊がいる施設を考えましょう。"
+          },
+          {
+            type: "facility",
+            visual: "traffic",
+            q: "信号が止まり、道路が混乱しています。交通整理をするのはどこですか？",
+            qHtml: "<ruby>信号<rt>しんごう</rt></ruby>が<ruby>止<rt>と</rt></ruby>まり、<ruby>道路<rt>どうろ</rt></ruby>が<ruby>混乱<rt>こんらん</rt></ruby>しています。<ruby>交通整理<rt>こうつうせいり</rt></ruby>をするのはどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "道路と交通の安全を守ります。",
+            answer: "police",
+            candidates: ["police", "cityhall", "firedept"],
+            ok: "警察が交差点で交通整理を始めました。",
+            ng: "交通や道路の安全を守る施設を考えましょう。"
+          },
+          {
+            type: "facility",
+            visual: "coordination",
+            q: "避難所、物資、被害の情報を集め、町全体の対応をまとめるのはどこですか？",
+            qHtml: "<ruby>避難所<rt>ひなんじょ</rt></ruby>、<ruby>物資<rt>ぶっし</rt></ruby>、<ruby>被害<rt>ひがい</rt></ruby>の<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>集<rt>あつ</rt></ruby>め、<ruby>町全体<rt>まちぜんたい</rt></ruby>の<ruby>対応<rt>たいおう</rt></ruby>をまとめるのはどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "市全体の行政や支援をまとめます。",
+            answer: "cityhall",
+            candidates: ["cityhall", "hospital", "community"],
+            ok: "市役所が情報を集め、必要な支援を調整しました。",
+            ng: "町全体の対応をまとめる行政の施設を考えましょう。"
+          },
+          {
+            type: "facility",
+            visual: "injury",
+            q: "多くのけが人がいます。診察や治療をする施設はどこですか？",
+            qHtml: "<ruby>多<rt>おお</rt></ruby>くのけが<ruby>人<rt>にん</rt></ruby>がいます。<ruby>診察<rt>しんさつ</rt></ruby>や<ruby>治療<rt>ちりょう</rt></ruby>をする<ruby>施設<rt>しせつ</rt></ruby>はどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "医師や看護師がいます。",
+            answer: "hospital",
+            candidates: ["hospital", "school", "firedept"],
+            ok: "病院がけが人を受け入れ、治療を始めました。",
+            ng: "診察や治療をする施設を考えてみましょう。"
+          },
+          {
+            type: "facility",
+            visual: "shelter-open",
+            q: "この町では、教室や体育館のある施設を避難所として開きます。児童や生徒が学ぶ施設はどこですか？",
+            qHtml: "この<ruby>町<rt>まち</rt></ruby>では、<ruby>教室<rt>きょうしつ</rt></ruby>や<ruby>体育館<rt>たいいくかん</rt></ruby>のある<ruby>施設<rt>しせつ</rt></ruby>を<ruby>避難所<rt>ひなんじょ</rt></ruby>として<ruby>開<rt>ひら</rt></ruby>きます。<ruby>児童<rt>じどう</rt></ruby>や<ruby>生徒<rt>せいと</rt></ruby>が<ruby>学<rt>まな</rt></ruby>ぶ<ruby>施設<rt>しせつ</rt></ruby>はどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "問題文に建物の名前が出ています。",
+            answer: "school",
+            candidates: ["school", "community", "cityhall"],
+            ok: "学校の体育館が避難所として開かれました。",
+            ng: "どの建物の体育館か、問題文を確認しましょう。"
+          }
+        ]
+      },
+
+      fire: {
+        title: "火災と救助に対応せよ",
+        titleHtml: "<ruby>火災<rt>かさい</rt></ruby>と<ruby>救助<rt>きゅうじょ</rt></ruby>に<ruby>対応<rt>たいおう</rt></ruby>せよ",
+        badge: "火災対応ミッション 修了",
+        color: "#e05c38",
+        stages: [
+          {
+            type: "action",
+            visual: "fire-call",
+            q: "住宅から火と煙が出ています。まず、どうしますか？",
+            qHtml: "<ruby>住宅<rt>じゅうたく</rt></ruby>から<ruby>火<rt>ひ</rt></ruby>と<ruby>煙<rt>けむり</rt></ruby>が<ruby>出<rt>で</rt></ruby>ています。まず、どうしますか？",
+            instruction: "安全な行動を1つ選びましょう。",
+            hint: "安全な場所へ離れ、消防へ知らせます。",
+            answer: "call119",
+            choices: [
+              { id: "call119", html: "<ruby>安全<rt>あんぜん</rt></ruby>な<ruby>場所<rt>ばしょ</rt></ruby>へ<ruby>離<rt>はな</rt></ruby>れ、119<ruby>番<rt>ばん</rt></ruby>へ<ruby>通報<rt>つうほう</rt></ruby>する", text: "安全な場所へ離れ、119番へ通報する" },
+              { id: "enter", html: "<ruby>建物<rt>たてもの</rt></ruby>の<ruby>中<rt>なか</rt></ruby>へ<ruby>入<rt>はい</rt></ruby>って<ruby>様子<rt>ようす</rt></ruby>を<ruby>見<rt>み</rt></ruby>る", text: "建物の中へ入って様子を見る" },
+              { id: "video", html: "<ruby>近<rt>ちか</rt></ruby>くで<ruby>動画<rt>どうが</rt></ruby>を<ruby>撮<rt>と</rt></ruby>る", text: "近くで動画を撮る" }
+            ],
+            ok: "安全な場所から119番へ通報できました。",
+            ng: "火や煙の近くは危険です。まず安全な場所へ離れましょう。"
+          },
+          {
+            type: "facility",
+            visual: "fire-engine",
+            q: "消防車を出し、火を消す活動をするのはどこですか？",
+            qHtml: "<ruby>消防車<rt>しょうぼうしゃ</rt></ruby>を<ruby>出<rt>だ</rt></ruby>し、<ruby>火<rt>ひ</rt></ruby>を<ruby>消<rt>け</rt></ruby>す<ruby>活動<rt>かつどう</rt></ruby>をするのはどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "消防車や救急車がある施設です。",
+            answer: "firedept",
+            candidates: ["firedept", "police", "cityhall"],
+            ok: "消防署が消防車を出し、消火活動を始めました。",
+            ng: "火を消す専門の施設を考えてみましょう。"
+          },
+          {
+            type: "facility",
+            visual: "traffic",
+            q: "消防車が通る道を確保し、周りの交通整理をするのはどこですか？",
+            qHtml: "<ruby>消防車<rt>しょうぼうしゃ</rt></ruby>が<ruby>通<rt>とお</rt></ruby>る<ruby>道<rt>みち</rt></ruby>を<ruby>確保<rt>かくほ</rt></ruby>し、<ruby>周<rt>まわ</rt></ruby>りの<ruby>交通整理<rt>こうつうせいり</rt></ruby>をするのはどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "道路と交通の安全を守ります。",
+            answer: "police",
+            candidates: ["police", "firedept", "hospital"],
+            ok: "警察が道路を整理し、消防車の道を確保しました。",
+            ng: "交通整理をする施設を考えてみましょう。"
+          },
+          {
+            type: "facility",
+            visual: "injury",
+            q: "煙を吸った人や、やけどをした人を治療する施設はどこですか？",
+            qHtml: "<ruby>煙<rt>けむり</rt></ruby>を<ruby>吸<rt>す</rt></ruby>った<ruby>人<rt>ひと</rt></ruby>や、やけどをした<ruby>人<rt>ひと</rt></ruby>を<ruby>治療<rt>ちりょう</rt></ruby>する<ruby>施設<rt>しせつ</rt></ruby>はどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "医師や看護師がいます。",
+            answer: "hospital",
+            candidates: ["hospital", "firedept", "school"],
+            ok: "病院がけが人を受け入れ、治療しました。",
+            ng: "治療をする施設を考えてみましょう。"
+          },
+          {
+            type: "facility",
+            visual: "coordination",
+            q: "家に戻れない人の避難先や支援物資をまとめる中心はどこですか？",
+            qHtml: "<ruby>家<rt>いえ</rt></ruby>に<ruby>戻<rt>もど</rt></ruby>れない<ruby>人<rt>ひと</rt></ruby>の<ruby>避難先<rt>ひなんさき</rt></ruby>や<ruby>支援物資<rt>しえんぶっし</rt></ruby>をまとめる<ruby>中心<rt>ちゅうしん</rt></ruby>はどこですか？",
+            instruction: "町の地図から施設を選びましょう。",
+            hint: "町全体の支援を調整する行政の施設です。",
+            answer: "cityhall",
+            candidates: ["cityhall", "community", "police"],
+            ok: "市役所が避難先と支援物資を調整しました。",
+            ng: "町全体の支援をまとめる施設を考えましょう。"
+          },
+          {
+            type: "action",
+            visual: "fire-safe",
+            q: "火が消えたように見えます。すぐ家へ戻ってよいですか？",
+            qHtml: "<ruby>火<rt>ひ</rt></ruby>が<ruby>消<rt>き</rt></ruby>えたように<ruby>見<rt>み</rt></ruby>えます。すぐ<ruby>家<rt>いえ</rt></ruby>へ<ruby>戻<rt>もど</rt></ruby>ってよいですか？",
+            instruction: "安全な行動を1つ選びましょう。",
+            hint: "見た目だけでは安全か分かりません。",
+            answer: "wait",
+            choices: [
+              { id: "wait", html: "<ruby>消防<rt>しょうぼう</rt></ruby>や<ruby>係<rt>かかり</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>が<ruby>安全<rt>あんぜん</rt></ruby>を<ruby>確認<rt>かくにん</rt></ruby>するまで<ruby>待<rt>ま</rt></ruby>つ", text: "消防や係の人が安全を確認するまで待つ" },
+              { id: "return", html: "すぐに<ruby>中<rt>なか</rt></ruby>へ<ruby>戻<rt>もど</rt></ruby>る", text: "すぐに中へ戻る" },
+              { id: "alone", html: "<ruby>一人<rt>ひとり</rt></ruby>で<ruby>建物<rt>たてもの</rt></ruby>を<ruby>確認<rt>かくにん</rt></ruby>する", text: "一人で建物を確認する" }
+            ],
+            ok: "安全確認が終わるまで待つことができました。",
+            ng: "見えない煙や再び燃える危険があります。安全確認を待ちましょう。"
+          }
+        ]
+      }
+    };
+
+    const state = {
+      missionId: "flood",
+      difficulty: "normal",
+      stageIndex: 0,
+      mistakes: 0,
+      answered: false,
+      sound: true
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const startScreen = $("startScreen");
+    const gameScreen = $("gameScreen");
+    const resultScreen = $("resultScreen");
+    const townGrid = $("townGrid");
+    const answerGrid = $("answerGrid");
+    const feedback = $("feedback");
+    const nextBtn = $("nextBtn");
+
+    function showScreen(screen) {
+      [startScreen, gameScreen, resultScreen].forEach((el) => el.classList.add("hidden"));
+      screen.classList.remove("hidden");
+      $("homeTopBtn").classList.toggle("hidden", screen === startScreen);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function iconSvg(key, width = 78, height = 68) {
+      const open = `<svg viewBox="0 0 120 100" width="${width}" height="${height}" aria-hidden="true">`;
+      const close = `</svg>`;
+      const ground = `<ellipse cx="60" cy="88" rx="48" ry="8" fill="#d9e6ed"/>`;
+      const icons = {
+        cityhall: `${open}${ground}<rect x="25" y="35" width="70" height="51" rx="5" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M19 36L60 13l41 23" fill="#dceeff" stroke="#1769aa" stroke-width="3"/><rect x="52" y="58" width="16" height="28" fill="#b9d9f2" stroke="#1769aa" stroke-width="2"/><rect x="37" y="45" width="10" height="10" fill="#b9d9f2"/><rect x="73" y="45" width="10" height="10" fill="#b9d9f2"/><path d="M61 14V3M61 3h18l-7 7 7 7H61" fill="#f35f55" stroke="#b9362d" stroke-width="2"/>${close}`,
+        firedept: `${open}${ground}<rect x="17" y="52" width="61" height="28" rx="6" fill="#ef5449" stroke="#a92922" stroke-width="3"/><rect x="62" y="44" width="31" height="36" rx="5" fill="#fff" stroke="#a92922" stroke-width="3"/><circle cx="34" cy="84" r="8" fill="#4b5563"/><circle cx="78" cy="84" r="8" fill="#4b5563"/><path d="M27 43h28M31 36v14M43 36v14" stroke="#a92922" stroke-width="4"/><path d="M95 35c5-11 1-19-6-26 1 8-6 11-10 17-5 7-2 15 5 17 7 2 14-1 16-8z" fill="#ff9a4e" stroke="#b9362d" stroke-width="2"/>${close}`,
+        police: `${open}${ground}<rect x="24" y="43" width="72" height="41" rx="7" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M60 8l25 10v17c0 21-14 32-25 40-11-8-25-19-25-40V18z" fill="#dceeff" stroke="#1769aa" stroke-width="3"/><path d="M60 23l5 11 12 1-9 8 3 12-11-7-11 7 3-12-9-8 12-1z" fill="#f2c94c" stroke="#a67400" stroke-width="2"/>${close}`,
+        hospital: `${open}${ground}<rect x="24" y="20" width="72" height="66" rx="7" fill="#fff" stroke="#1769aa" stroke-width="3"/><rect x="52" y="32" width="16" height="39" fill="#ef5449"/><rect x="40" y="44" width="40" height="16" fill="#ef5449"/><rect x="35" y="75" width="12" height="11" fill="#b9d9f2"/><rect x="73" y="75" width="12" height="11" fill="#b9d9f2"/>${close}`,
+        school: `${open}${ground}<rect x="21" y="36" width="78" height="50" rx="6" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M16 38L60 12l44 26" fill="#ffe5a7" stroke="#a76917" stroke-width="3"/><rect x="52" y="58" width="16" height="28" fill="#b9d9f2" stroke="#1769aa" stroke-width="2"/><path d="M86 14v28M86 14h17l-7 8 7 8H86" fill="#ef5449" stroke="#b9362d" stroke-width="2"/>${close}`,
+        community: `${open}${ground}<rect x="20" y="29" width="80" height="48" rx="7" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M15 31L60 10l45 21" fill="#dceeff" stroke="#1769aa" stroke-width="3"/><circle cx="39" cy="78" r="8" fill="#ffd29a"/><circle cx="60" cy="74" r="8" fill="#f2c94c"/><circle cx="81" cy="78" r="8" fill="#ffd29a"/><path d="M29 92q10-13 20 0M50 88q10-15 20 0M71 92q10-13 20 0" fill="none" stroke="#60778a" stroke-width="3"/>${close}`,
+        default: `${open}${ground}<circle cx="60" cy="48" r="30" fill="#fff" stroke="#1769aa" stroke-width="4"/><path d="M60 29v23" stroke="#1769aa" stroke-width="6" stroke-linecap="round"/><circle cx="60" cy="65" r="4" fill="#1769aa"/>${close}`
+      };
+      return icons[key] || icons.default;
+    }
+
+    function eventSvg(key) {
+      const open = `<svg viewBox="0 0 320 150" width="100%" height="150" style="max-width:320px" aria-hidden="true">`;
+      const close = `</svg>`;
+      const base = `<rect width="320" height="150" rx="18" fill="#f3f9fd"/>`;
+      const map = {
+        "rain-info": `${open}${base}<path d="M0 112q45-20 90 0t90 0t140 0v38H0z" fill="#69bfe7"/><path d="M36 100V65l35-26 35 26v35" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M196 25c26 0 26 25 0 25h-52c-20 0-20-23 0-23 7-18 39-19 52-2z" fill="#8097a4"/><path d="M153 61l-8 21M180 60l-8 22M207 60l-8 22" stroke="#1769aa" stroke-width="5" stroke-linecap="round"/><rect x="237" y="50" width="50" height="72" rx="9" fill="#fff" stroke="#60778a" stroke-width="3"/><rect x="244" y="60" width="36" height="48" rx="3" fill="#dff3ff"/><path d="M250 80h24M250 91h19" stroke="#1769aa" stroke-width="4"/>${close}`,
+        warning: `${open}${base}<rect x="29" y="43" width="87" height="67" rx="7" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M22 45l51-29 51 29" fill="#dceeff" stroke="#1769aa" stroke-width="3"/><path d="M159 40c45 0 81 23 104 61" fill="none" stroke="#1769aa" stroke-width="5" stroke-dasharray="8 7"/><circle cx="265" cy="103" r="24" fill="#fff4c8" stroke="#d1931a" stroke-width="3"/><path d="M265 88v18" stroke="#d1931a" stroke-width="5"/><circle cx="265" cy="114" r="3" fill="#d1931a"/>${close}`,
+        "road-water": `${open}${base}<path d="M0 111q50-15 100 0t100 0t120 0v39H0z" fill="#65bbe3"/><path d="M34 96L139 47l134 49" fill="none" stroke="#777" stroke-width="20"/><path d="M34 96L139 47l134 49" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="12 10"/><rect x="118" y="57" width="42" height="22" rx="5" fill="#ef5449"/><circle cx="128" cy="82" r="6" fill="#4b5563"/><circle cx="151" cy="82" r="6" fill="#4b5563"/><path d="M214 50h35l-5 37h-25z" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M232 39v12" stroke="#1769aa" stroke-width="4"/>${close}`,
+        "shelter-open": `${open}${base}<path d="M48 69l63-43 63 43" fill="#fff" stroke="#1769aa" stroke-width="4"/><rect x="61" y="69" width="100" height="55" rx="7" fill="#fff" stroke="#1769aa" stroke-width="4"/><rect x="103" y="88" width="18" height="36" fill="#b9d9f2"/><circle cx="222" cy="76" r="16" fill="#ffd29a"/><circle cx="265" cy="76" r="16" fill="#f2c94c"/><path d="M195 125q27-37 54 0M238 125q27-37 54 0" fill="#78a9d2"/>${close}`,
+        "shelter-supplies": `${open}${base}<rect x="38" y="61" width="64" height="50" rx="7" fill="#d9b47c" stroke="#825a2a" stroke-width="3"/><path d="M38 75h64M70 61v50" stroke="#825a2a" stroke-width="3"/><path d="M139 45h33l10 66h-53z" fill="#8ed0f0" stroke="#1769aa" stroke-width="3"/><path d="M144 43q12-20 24 0" fill="none" stroke="#1769aa" stroke-width="3"/><rect x="213" y="43" width="50" height="68" rx="7" fill="#fff" stroke="#60778a" stroke-width="3"/><path d="M238 43v68M213 76h50" stroke="#60778a" stroke-width="2"/><path d="M227 54h22" stroke="#ef5449" stroke-width="5"/><path d="M238 44v22" stroke="#ef5449" stroke-width="5"/>${close}`,
+        injury: `${open}${base}<circle cx="102" cy="47" r="19" fill="#ffd29a"/><path d="M72 120q30-64 60 0" fill="#6ba8d6"/><path d="M126 81l40 25" stroke="#60778a" stroke-width="9" stroke-linecap="round"/><path d="M157 92l28 25" stroke="#f6f6f6" stroke-width="18" stroke-linecap="round"/><path d="M160 97l18 16" stroke="#ef5449" stroke-width="4"/><rect x="222" y="38" width="64" height="73" rx="7" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M254 53v42M233 74h42" stroke="#ef5449" stroke-width="12"/>${close}`,
+        "quake-protect": `${open}${base}<path d="M22 121h276" stroke="#9b846c" stroke-width="7"/><path d="M50 111V45h78v66M191 111V33h82v78" fill="#fff" stroke="#8a5d24" stroke-width="4"/><path d="M87 45l-12 20 16 15-13 31M228 33l-14 22 17 18-14 38" fill="none" stroke="#b9362d" stroke-width="5"/><circle cx="155" cy="72" r="16" fill="#ffd29a"/><path d="M127 124q28-55 56 0" fill="#4e96cb"/><path d="M135 68q20-22 40 0" fill="none" stroke="#60778a" stroke-width="10" stroke-linecap="round"/>${close}`,
+        collapsed: `${open}${base}<path d="M30 119L67 45l70 37 42-29 83 66" fill="#d8c7b2" stroke="#8b765f" stroke-width="4"/><path d="M70 43l13 20-16 15 19 21M175 56l21 19-14 22" fill="none" stroke="#b9362d" stroke-width="5"/><rect x="218" y="70" width="61" height="31" rx="6" fill="#ef5449"/><circle cx="232" cy="106" r="8" fill="#4b5563"/><circle cx="265" cy="106" r="8" fill="#4b5563"/>${close}`,
+        traffic: `${open}${base}<path d="M0 126L160 44l160 82" fill="none" stroke="#747474" stroke-width="34"/><path d="M0 126L160 44l160 82" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="16 14"/><circle cx="162" cy="57" r="16" fill="#ffd29a"/><path d="M140 120q22-59 44 0" fill="#2b70aa"/><path d="M186 82l36-17M139 83l-34-18" stroke="#60778a" stroke-width="8" stroke-linecap="round"/><rect x="51" y="76" width="44" height="22" rx="5" fill="#f2c94c"/><circle cx="61" cy="102" r="6" fill="#4b5563"/><circle cx="85" cy="102" r="6" fill="#4b5563"/>${close}`,
+        coordination: `${open}${base}<rect x="34" y="39" width="79" height="75" rx="7" fill="#fff" stroke="#1769aa" stroke-width="3"/><path d="M27 41l47-26 47 26" fill="#dceeff" stroke="#1769aa" stroke-width="3"/><circle cx="177" cy="52" r="19" fill="#ffd29a"/><circle cx="248" cy="52" r="19" fill="#f2c94c"/><path d="M149 119q28-61 56 0M220 119q28-61 56 0" fill="#6ba8d6"/><path d="M180 76l-35-18M245 76l35-18M197 73h33" stroke="#1769aa" stroke-width="4" stroke-dasharray="7 5"/>${close}`,
+        "fire-call": `${open}${base}<path d="M41 117V64l43-31 43 31v53" fill="#fff" stroke="#a85326" stroke-width="4"/><path d="M124 119c-15-22 5-40 14-53 3 13 13 15 12 30 8-15 7-32 0-46 27 18 45 46 27 69z" fill="#ff8a3d" stroke="#b9362d" stroke-width="4"/><rect x="230" y="33" width="45" height="78" rx="8" fill="#fff" stroke="#60778a" stroke-width="3"/><rect x="237" y="42" width="31" height="49" rx="3" fill="#ffe6df"/><text x="252.5" y="72" text-anchor="middle" font-size="20" font-weight="900" fill="#b9362d">119</text> ${close}`,
+        "fire-engine": `${open}${base}<rect x="43" y="70" width="105" height="40" rx="7" fill="#ef5449" stroke="#a92922" stroke-width="4"/><rect x="126" y="59" width="54" height="51" rx="7" fill="#fff" stroke="#a92922" stroke-width="4"/><circle cx="69" cy="116" r="12" fill="#4b5563"/><circle cx="153" cy="116" r="12" fill="#4b5563"/><path d="M57 55h68M66 44v22M91 44v22" stroke="#a92922" stroke-width="6"/><path d="M222 113c-14-21 5-38 14-51 3 13 12 14 12 28 7-14 6-29 0-42 26 17 42 43 26 65z" fill="#ff8a3d" stroke="#b9362d" stroke-width="4"/>${close}`,
+        "fire-safe": `${open}${base}<path d="M48 116V59l47-34 47 34v57" fill="#fff" stroke="#8a5d24" stroke-width="4"/><path d="M103 39c17 8 29 23 29 40" fill="none" stroke="#9ca8ad" stroke-width="7" stroke-linecap="round"/><circle cx="224" cy="63" r="22" fill="#ffd29a"/><path d="M190 125q34-70 68 0" fill="#1769aa"/><path d="M209 55l10 10 22-26" fill="none" stroke="#17825b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>${close}`
+      };
+      return map[key] || `${open}${base}${iconSvg("default", 100, 84)}${close}`;
+    }
+
+    function renderTown() {
+      townGrid.innerHTML = facilities.map((facility) => `
+        <button class="facility" type="button" data-facility="${facility.id}">
+          <span class="facility-icon">${iconSvg(facility.icon)}</span>
+          <span class="facility-label">${facility.label}</span>
+        </button>
+      `).join("");
+      townGrid.querySelectorAll(".facility").forEach((button) => {
+        button.addEventListener("click", () => chooseFacility(button.dataset.facility));
+      });
+    }
+
+    function selectedMission() {
+      return missions[state.missionId];
+    }
+
+    function currentStage() {
+      return selectedMission().stages[state.stageIndex];
+    }
+
+    function startMission(requestedMissionId = null) {
+      const selectedCard = document.querySelector(".mission-card.selected");
+      const missionId = requestedMissionId || selectedCard?.dataset.mission || state.missionId || "flood";
+
+      if (!missions[missionId]) {
+        alert("ミッションを読み込めませんでした。もう一度ミッションを選んでください。");
+        return;
+      }
+
+      state.missionId = missionId;
+      state.difficulty = $("difficultySelect").value;
+      state.stageIndex = 0;
+      state.mistakes = 0;
+      state.answered = false;
+      renderTown();
+      showScreen(gameScreen);
+      renderStage();
+    }
+
+    function renderStage() {
+      state.answered = false;
+      feedback.className = "feedback hidden";
+      feedback.innerHTML = "";
+      nextBtn.classList.add("hidden");
+      answerGrid.innerHTML = "";
+      answerGrid.classList.add("hidden");
+
+      const mission = selectedMission();
+      const stage = currentStage();
+      $("missionName").innerHTML = mission.titleHtml;
+      $("stageCount").textContent = `${state.stageIndex + 1} / ${mission.stages.length}`;
+      const safety = Math.round((state.stageIndex / mission.stages.length) * 100);
+      $("safetyText").textContent = `${safety}%`;
+      $("safetyBar").style.width = `${safety}%`;
+      $("eventTag").textContent = `できごと ${state.stageIndex + 1}`;
+      $("eventVisual").innerHTML = eventSvg(stage.visual);
+      $("eventQuestion").innerHTML = stage.qHtml || stage.q;
+      $("eventInstruction").textContent = stage.instruction;
+
+      townGrid.querySelectorAll(".facility").forEach((button) => {
+        button.disabled = stage.type !== "facility";
+        button.classList.remove("correct-flash", "wrong-flash", "not-candidate");
+        if (stage.type === "facility" && state.difficulty === "easy" && !stage.candidates.includes(button.dataset.facility)) {
+          button.classList.add("not-candidate");
+          button.disabled = true;
+        }
+      });
+
+      if (stage.type === "action") {
+        answerGrid.classList.remove("hidden");
+        const shuffled = shuffle(stage.choices);
+        answerGrid.innerHTML = shuffled.map((choice, index) => `
+          <button class="answer-card" type="button" data-choice="${choice.id}">
+            <span class="answer-mark">${String.fromCharCode(65 + index)}</span>
+            <span>${choice.html}</span>
+          </button>
+        `).join("");
+        answerGrid.querySelectorAll(".answer-card").forEach((button) => {
+          button.addEventListener("click", () => chooseAction(button.dataset.choice, button));
+        });
+      }
+    }
+
+    function chooseFacility(id) {
+      const stage = currentStage();
+      if (state.answered || stage.type !== "facility") return;
+      const button = townGrid.querySelector(`[data-facility="${id}"]`);
+      if (id === stage.answer) {
+        state.answered = true;
+        button.classList.add("correct-flash");
+        showFeedback(true, stage.ok);
+        playTone(true);
+        disableStageControls();
+      } else {
+        state.mistakes += 1;
+        button.classList.add("wrong-flash");
+        setTimeout(() => button.classList.remove("wrong-flash"), 450);
+        showFeedback(false, stage.ng);
+        playTone(false);
+      }
+    }
+
+    function chooseAction(id, button) {
+      const stage = currentStage();
+      if (state.answered || stage.type !== "action") return;
+      if (id === stage.answer) {
+        state.answered = true;
+        button.classList.add("correct");
+        showFeedback(true, stage.ok);
+        playTone(true);
+        disableStageControls();
+      } else {
+        state.mistakes += 1;
+        button.classList.add("wrong");
+        setTimeout(() => button.classList.remove("wrong"), 650);
+        showFeedback(false, stage.ng);
+        playTone(false);
+      }
+    }
+
+    function disableStageControls() {
+      townGrid.querySelectorAll(".facility").forEach((button) => button.disabled = true);
+      answerGrid.querySelectorAll(".answer-card").forEach((button) => button.disabled = true);
+      nextBtn.textContent = state.stageIndex === selectedMission().stages.length - 1 ? "ミッション完了" : "つぎへ";
+      nextBtn.classList.remove("hidden");
+    }
+
+    function showFeedback(ok, text) {
+      feedback.className = `feedback ${ok ? "ok" : "ng"}`;
+      feedback.innerHTML = `<strong>${ok ? "○ 対応成功！" : "△ もう一度考えよう"}</strong><p>${text}</p>`;
+    }
+
+    function nextStage() {
+      if (!state.answered) return;
+      if (state.stageIndex >= selectedMission().stages.length - 1) {
+        finishMission();
+      } else {
+        state.stageIndex += 1;
+        renderStage();
+      }
+    }
+
+    function finishMission() {
+      const mission = selectedMission();
+      const safety = 100;
+      $("safetyText").textContent = `${safety}%`;
+      $("safetyBar").style.width = `${safety}%`;
+
+      const stars = state.mistakes === 0 ? 3 : state.mistakes <= 2 ? 2 : 1;
+      $("resultStars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+      $("resultMessage").textContent = stars === 3
+        ? "すばらしい判断！ 町のみんなを安全にできました。"
+        : stars === 2
+          ? "よく対応できました。ヒントを思い出せば、さらに安心です。"
+          : "最後まで町を守りました。もう一度挑戦して役割を確認しよう。";
+      $("resultDetail").textContent = `やり直した回数：${state.mistakes}回`;
+      $("badgeTitle").textContent = mission.badge;
+      $("badgeText").textContent = `${mission.title}のすべてのできごとに対応しました。`;
+      saveCompletion(state.missionId, stars);
+      selectMission(state.missionId);
+    updateCompletionBadges();
+      showScreen(resultScreen);
+      launchConfetti();
+      playSuccessJingle();
+    }
+
+    function showHint() {
+      const stage = currentStage();
+      if (!stage) return;
+      feedback.className = "feedback";
+      feedback.innerHTML = `<strong>ヒント</strong><p>${stage.hint}</p>`;
+    }
+
+    function readCurrent() {
+      if (!("speechSynthesis" in window)) {
+        alert("この端末では読み上げ機能を使えません。");
+        return;
+      }
+      const stage = currentStage();
+      if (!stage) return;
+      speechSynthesis.cancel();
+      let text = `${stage.q}。${stage.instruction}。`;
+      if (stage.type === "action") {
+        const visibleChoices = [...answerGrid.querySelectorAll(".answer-card")];
+        text += visibleChoices.map((button, i) => `${String.fromCharCode(65+i)}、${button.innerText}`).join("。");
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "ja-JP";
+      utterance.rate = .92;
+      speechSynthesis.speak(utterance);
+    }
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function saveCompletion(id, stars) {
+      try {
+        const saved = JSON.parse(localStorage.getItem("disasterMissionProgress") || "{}");
+        saved[id] = Math.max(saved[id] || 0, stars);
+        localStorage.setItem("disasterMissionProgress", JSON.stringify(saved));
+      } catch (_) {}
+    }
+
+    function loadCompletion() {
+      try {
+        return JSON.parse(localStorage.getItem("disasterMissionProgress") || "{}");
+      } catch (_) {
+        return {};
+      }
+    }
+
+    function updateCompletionBadges() {
+      const saved = loadCompletion();
+      document.querySelectorAll("[data-complete]").forEach((badge) => {
+        const stars = saved[badge.dataset.complete] || 0;
+        badge.textContent = stars ? `${"★".repeat(stars)}${"☆".repeat(3-stars)}` : "未クリア";
+      });
+    }
+
+    function playTone(correct) {
+      if (!state.sound) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(correct ? 660 : 210, ctx.currentTime);
+        if (correct) osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + .18);
+        gain.gain.setValueAtTime(.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(.12, ctx.currentTime + .02);
+        gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + .28);
+        osc.start();
+        osc.stop(ctx.currentTime + .3);
+      } catch (_) {}
+    }
+
+    function playSuccessJingle() {
+      if (!state.sound) return;
+      [523, 659, 784, 1047].forEach((freq, i) => {
+        setTimeout(() => {
+          try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(.0001, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(.1, ctx.currentTime + .01);
+            gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + .24);
+            osc.start(); osc.stop(ctx.currentTime + .26);
+          } catch (_) {}
+        }, i * 150);
+      });
+    }
+
+    function launchConfetti() {
+      const container = $("confetti");
+      const colors = ["#1769aa", "#17825b", "#f2c94c", "#ef5449", "#8b5cf6"];
+      container.innerHTML = "";
+      container.classList.remove("hidden");
+      for (let i = 0; i < 54; i++) {
+        const piece = document.createElement("span");
+        piece.className = "confetti-piece";
+        piece.style.left = `${Math.random()*100}%`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDelay = `${Math.random()*.8}s`;
+        piece.style.transform = `rotate(${Math.random()*180}deg)`;
+        container.appendChild(piece);
+      }
+      setTimeout(() => container.classList.add("hidden"), 3700);
+    }
+
+
+    function worksheetFacility(id) {
+      return facilities.find((facility) => facility.id === id);
+    }
+
+    function worksheetStageOptions(stage, type) {
+      if (stage.type === "facility") {
+        const candidateIds = Array.isArray(stage.candidates) ? [...stage.candidates] : facilities.map((facility) => facility.id);
+        const ids = type === "easy"
+          ? shuffle([stage.answer, ...shuffle(candidateIds.filter((id) => id !== stage.answer)).slice(0, 1)])
+          : shuffle(candidateIds.slice(0, 3));
+        return ids.map((id) => {
+          const facility = worksheetFacility(id);
+          return {
+            id,
+            html: facility ? facility.label : id,
+            text: facility ? facility.plain : id
+          };
+        });
+      }
+
+      const choices = Array.isArray(stage.choices) ? [...stage.choices] : [];
+      if (type === "easy") {
+        const correct = choices.find((choice) => choice.id === stage.answer);
+        const wrong = shuffle(choices.filter((choice) => choice.id !== stage.answer))[0];
+        return shuffle([correct, wrong].filter(Boolean));
+      }
+      return shuffle(choices).slice(0, 3);
+    }
+
+    function worksheetCorrectAnswer(stage) {
+      if (stage.type === "facility") {
+        const facility = worksheetFacility(stage.answer);
+        return facility ? facility.label : stage.answer;
+      }
+      const choice = (stage.choices || []).find((item) => item.id === stage.answer);
+      return choice ? choice.html : stage.answer;
+    }
+
+    function worksheetQuestionHtml(stage, questionIndex, config) {
+      const showImage = config.type === "easy" || config.withImages;
+      const visual = showImage ? `<div class="worksheet-visual">${eventSvg(stage.visual)}</div>` : "";
+      const contentClass = showImage ? "worksheet-q-grid" : "worksheet-q-grid no-image";
+      let taskHtml = "";
+
+      if (config.type === "reflection") {
+        taskHtml = `
+          <div class="worksheet-answer-line"><b>自分の判断：</b></div>
+          <div class="worksheet-reason-line"><b>そう考えた理由：</b></div>
+        `;
+      } else {
+        const options = worksheetStageOptions(stage, config.type);
+        taskHtml = `
+          <div class="worksheet-options">
+            ${options.map((option, index) => `<span class="worksheet-option">${String.fromCharCode(65 + index)}．${option.html}</span>`).join("")}
+          </div>
+          <div class="worksheet-answer-line"><b>答え：</b></div>
+        `;
+      }
+
+      return `
+        <article class="worksheet-question">
+          <div class="${contentClass}">
+            ${visual}
+            <div>
+              <div class="worksheet-question-number">できごと ${questionIndex + 1}</div>
+              <div class="worksheet-question-text">${stage.qHtml || stage.q}</div>
+              ${taskHtml}
+              ${config.includeAnswers ? `<div class="worksheet-teacher-answer">先生用の答え：${worksheetCorrectAnswer(stage)}</div>` : ""}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function buildMissionWorksheet(config) {
+      const mission = missions[config.missionId] || missions.flood;
+      const pages = [mission.stages.slice(0, 3), mission.stages.slice(3, 6)];
+      const typeTitle = config.type === "easy" ? "やさしい" : config.type === "reflection" ? "ふりかえり" : "標準";
+
+      $("printSheet").innerHTML = pages.map((stages, pageIndex) => `
+        <section class="worksheet-page">
+          <header class="worksheet-page-head">
+            <h1>${mission.titleHtml}<br><span style="font-size:.68em;">防災ミッション ワークシート（${typeTitle}）</span></h1>
+            <div class="worksheet-page-count">${pageIndex + 1} / ${pages.length}</div>
+          </header>
+          <div class="worksheet-meta">
+            <span>日付：　　　月　　　日</span>
+            <span>名前：<span class="worksheet-name">　　　　　　　　　　　　</span></span>
+          </div>
+          ${stages.map((stage, localIndex) => worksheetQuestionHtml(stage, pageIndex * 3 + localIndex, config)).join("")}
+          <div class="worksheet-footer-note">※地域の避難所や対応は、市町村や学校の防災情報も確認しましょう。</div>
+        </section>
+      `).join("");
+    }
+
+    function selectMission(missionId) {
+      const mission = missions[missionId];
+      const card = document.querySelector(`.mission-card[data-mission="${missionId}"]`);
+      if (!mission || !card) return;
+
+      document.querySelectorAll(".mission-card").forEach((item) => {
+        const selected = item === card;
+        item.classList.toggle("selected", selected);
+        item.setAttribute("aria-checked", selected ? "true" : "false");
+      });
+      state.missionId = missionId;
+      $("selectedMissionStatus").textContent = `選択中：${mission.title}`;
+    }
+
+    const missionGrid = document.querySelector(".mission-grid");
+    missionGrid.addEventListener("click", (event) => {
+      const card = event.target.closest(".mission-card");
+      if (!card || !missionGrid.contains(card)) return;
+      selectMission(card.dataset.mission);
+    });
+
+    missionGrid.addEventListener("keydown", (event) => {
+      const card = event.target.closest(".mission-card");
+      if (!card) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectMission(card.dataset.mission);
+      }
+    });
+
+    $("startBtn").addEventListener("click", () => {
+      const selectedCard = document.querySelector(".mission-card.selected");
+      startMission(selectedCard?.dataset.mission || state.missionId);
+    });
+    nextBtn.addEventListener("click", nextStage);
+    $("hintBtn").addEventListener("click", showHint);
+    $("readBtn").addEventListener("click", readCurrent);
+    $("retryBtn").addEventListener("click", () => startMission(state.missionId));
+    $("selectMissionBtn").addEventListener("click", () => showScreen(startScreen));
+    $("homeTopBtn").addEventListener("click", () => showScreen(startScreen));
+
+    $("rubyBtn").addEventListener("click", () => {
+      const hidden = document.body.classList.toggle("hide-ruby");
+      $("rubyBtn").textContent = `ふりがな：${hidden ? "なし" : "あり"}`;
+    });
+
+    $("soundBtn").addEventListener("click", () => {
+      state.sound = !state.sound;
+      $("soundBtn").textContent = `音：${state.sound ? "あり" : "なし"}`;
+    });
+
+
+    $("worksheetBtn").addEventListener("click", () => {
+      $("worksheetMissionSelect").value = state.missionId;
+      $("worksheetDialog").showModal();
+    });
+    $("closeWorksheetBtn").addEventListener("click", () => $("worksheetDialog").close());
+    $("cancelWorksheetBtn").addEventListener("click", () => $("worksheetDialog").close());
+
+    document.querySelectorAll('input[name="worksheetType"]').forEach((radio) => {
+      radio.addEventListener("change", () => {
+        if (radio.checked && radio.value === "easy") {
+          $("worksheetImageCheck").checked = true;
+        }
+      });
+    });
+
+    $("printWorksheetBtn").addEventListener("click", () => {
+      const type = document.querySelector('input[name="worksheetType"]:checked')?.value || "standard";
+      buildMissionWorksheet({
+        missionId: $("worksheetMissionSelect").value,
+        type,
+        withImages: $("worksheetImageCheck").checked,
+        includeAnswers: $("worksheetAnswerCheck").checked
+      });
+      $("worksheetDialog").close();
+      window.print();
+    });
+
+    updateCompletionBadges();
+  </script>
+</body>
+</html>
